@@ -34,10 +34,17 @@
                 title="导入数据源"
                 @click="dsImport.open()"
             ></el-button>
-            <el-button :icon="Upload" text bg title="导出数据源"></el-button>
+            <el-button
+                :icon="Upload"
+                text
+                bg
+                title="导出数据源"
+                @click="dsExport.open()"
+            ></el-button>
         </div>
         <DsDialog ref="dsDialog" @submit="handleSubmit" />
         <DsImport ref="dsImport" @import="handleImport" />
+        <DsExport ref="dsExport" @export="handleExport" />
     </div>
 </template>
 
@@ -47,6 +54,7 @@ import DsDialog from './ds-dialog.vue';
 import { Platform, Download, Upload } from '@element-plus/icons-vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import DsImport from './dsImport.vue';
+import DsExport from './dsExport.vue';
 import { v4 as uuid } from 'uuid';
 
 const props = defineProps({
@@ -55,6 +63,7 @@ const props = defineProps({
 const dataSources = props.designer.formConfig.dataSources;
 const dsDialog = ref();
 const dsImport = ref();
+const dsExport = ref();
 const dsList = computed(() => {
     return dataSources || [];
 });
@@ -122,6 +131,8 @@ function handleImport(ds, type) {
     }
     dsImport.value.close();
 }
+
+function handleExport() {}
 </script>
 
 <style lang="scss" scoped>
