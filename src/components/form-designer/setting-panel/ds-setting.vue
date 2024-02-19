@@ -27,22 +27,34 @@
         </ul>
         <div class="ta-c">
             <el-button icon="el-icon-plus" text bg @click="handleAdd">新增数据源</el-button>
+            <el-button
+                :icon="Download"
+                text
+                bg
+                title="导入数据源"
+                @click="dsImport.open()"
+            ></el-button>
+            <el-button :icon="Upload" text bg title="导出数据源"></el-button>
         </div>
         <DsDialog ref="dsDialog" @submit="handleSubmit" />
+        <DsImport ref="dsImport" @import="handleImport" />
     </div>
 </template>
 
 <script setup>
-import { computed, ref } from 'vue';
+import { computed, ref, watch } from 'vue';
 import DsDialog from './ds-dialog.vue';
-import { Platform } from '@element-plus/icons-vue';
+import { Platform, Download, Upload } from '@element-plus/icons-vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
+import DsImport from './dsImport.vue';
+import { v4 as uuid } from 'uuid';
 
 const props = defineProps({
     designer: Object,
 });
 const dataSources = props.designer.formConfig.dataSources;
 const dsDialog = ref();
+const dsImport = ref();
 const dsList = computed(() => {
     return dataSources || [];
 });
@@ -84,6 +96,31 @@ function handleRemoveDs(index) {
     }).then(() => {
         dataSources.splice(index, 1);
     });
+}
+
+function resolveImportDsItem(dsItem) {
+    const dsNames = dataSources.map((item) => item.uniqueName);
+    if (!dsNames.includes(dsItem.uniqueName)) {
+        dsItem.dataSourceId = `ds_${uuid()}`;
+        dataSources.push(dsItem);
+    }
+}
+
+function handleImport(ds, type) {
+    try {
+        const dsObj = JSON.parse(ds);
+        if (type === 'clear') dataSources.splice(0, dataSources.length);
+        if (Array.isArray(dsObj)) {
+            dsObj.forEach((el) => {
+                resolveImportDsItem(el);
+            });
+        } else if (typeof dsObj === Object && !!dsObj) {
+            resolveImportDsItem(dsObj);
+        }
+    } catch (err) {
+        console.log('导入数据源失败:', err);
+    }
+    dsImport.value.close();
 }
 </script>
 
