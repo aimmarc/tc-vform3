@@ -1,5 +1,5 @@
 # Variant Form 3 For Vue 3.x
-#### 一款高效的Vue 3低代码表单，可视化设计，一键生成源码，享受更多摸鱼时间。
+#### 一款高效的Vue 3低代码表单，可视化设计，一键生成源码，享受更多摸鱼时间。特色功能（对比官网）：基础版增加数据源模块，欢迎品尝！
 
 ![image](https://ks3-cn-beijing.ksyuncs.com/vform-static/img/vform_demo.gif)
 
