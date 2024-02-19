@@ -1,4 +1,5 @@
 import Clipboard from 'clipboard'
+import axios from 'axios'
 
 export function isNull(value) {
   return (value === null) || (value === undefined);
@@ -11,6 +12,15 @@ export function isNotNull(value) {
 export function isEmptyStr(str) {
   //return (str === undefined) || (!str) || (!/[^\s]/.test(str));
   return (str === undefined) || (!str && (str !== 0) && (str !== '0')) || (!/[^\s]/.test(str));
+}
+
+export function isEmptyObj(obj) {
+  return obj === undefined || Object.keys(obj).length === 0
+}
+
+export function isTable(type) {
+  const tables = ['edit-table', 'data-table']
+  return tables.includes(type)
 }
 
 export const generateId = function() {
@@ -377,6 +387,10 @@ export function buildDefaultFormJson() {
   }
 }
 
+/**
+ * 获取默认数据源
+ * @returns 
+ */
 export function getDefaultDs() {
   return {
     "dataSourceId": "",
@@ -394,4 +408,149 @@ export function getDefaultDs() {
     "dataSetEnabled": false,
     "dataSets": []
   }
+}
+
+/**
+ * 转译选择项数据
+ * @param rawData
+ * @param widgetType
+ * @param labelKey
+ * @param valueKey
+ * @returns {[]}
+ */
+export function translateOptionItems(rawData, widgetType, labelKey, valueKey) {
+  if (widgetType === 'cascader') { // 级联选择不转译
+    return deepClone(rawData)
+  }
+
+  let result = []
+  if (!!rawData && (rawData.length > 0)) {
+    rawData.forEach(ri => {
+      const label = ri[labelKey]
+      const value = ri[valueKey]
+      if (isNotNull(label) && isNotNull(value)) {
+        result.push({
+          ...ri,
+        })
+      } else {
+        result.push({
+          label,
+          value,
+        })
+      }
+    })
+  }
+
+  return result
+}
+
+/**
+ * 组装axios请求配置参数
+ * @param arrayObj
+ * @param DSV
+ * @returns {{}}
+ */
+export function assembleAxiosConfig(arrayObj, DSV) {
+  let result = {}
+  if (!arrayObj || (arrayObj.length <= 0)) {
+    return result
+  }
+
+  arrayObj.map(ai => {
+    if (ai.type === 'String') {
+      result[ai.name] = String(ai.value)
+    } else if (ai.type === 'Number') {
+      result[ai.name] = Number(ai.value)
+    } else if (ai.type === 'Boolean') {
+      if ((ai.value.toLowerCase() === 'false') || (ai.value === '0')) {
+        result[ai.name] = false
+      } else if ((ai.value.toLowerCase() === 'true') || (ai.value === '1')) {
+        result[ai.name] = true
+      } else {
+        result[ai.name] = null
+      }
+    } else if (ai.type === 'Variable') {
+      result[ai.name] = eval(ai.value)
+    }
+  })
+
+  return result
+}
+
+function buildRequestConfig(dataSource, DSV, isSandbox) {
+  let config = {}
+  if (dataSource.requestURLType === 'String') {
+    config.url = dataSource.requestURL
+  } else {
+    config.url = eval(dataSource.requestURL)
+  }
+  config.method = dataSource.requestMethod
+
+  config.headers = assembleAxiosConfig(dataSource.headers, DSV)
+  config.params = assembleAxiosConfig(dataSource.params, DSV)
+  config.data = assembleAxiosConfig(dataSource.data, DSV)
+
+  //let chFn = new Function('config', 'sandbox', 'form', 'widget', dataSource.configHandlerCode)
+  let chFn = new Function('config', 'isSandbox', 'DSV', dataSource.configHandlerCode)
+  return chFn.call(null, config, isSandbox, DSV)
+}
+
+export async function runDataSourceRequest(dataSource, DSV, isSandbox, $message) {
+  try {
+    let requestConfig = buildRequestConfig(dataSource, DSV, isSandbox)
+    //console.log('test------', requestConfig)
+    let result = await axios.request(requestConfig)
+
+    //let dhFn = new Function('result', 'sandbox', 'form', 'widget', dataSource.dataHandlerCode)
+    let dhFn = new Function('result', 'isSandbox', 'DSV', dataSource.dataHandlerCode)
+    return dhFn.call(null, result, isSandbox, DSV)
+  } catch (err) {
+    //let ehFn = new Function('error', 'sandbox', 'form', 'widget', '$message', dataSource.dataHandlerCode)
+    let ehFn = new Function('error', 'isSandbox', 'DSV', '$message', dataSource.errorHandlerCode)
+    ehFn.call(null, err, isSandbox, DSV, $message)
+    console.error(err)
+  }
+}
+
+export function getDSByName(formConfig, dsName) {
+  let resultDS = null
+  if (!!dsName && !!formConfig.dataSources) {
+    formConfig.dataSources.forEach(ds => {
+      if (ds.uniqueName === dsName) {
+        resultDS = ds
+      }
+    })
+  }
+
+  return resultDS
+}
+
+export function uuid2(len, radix) {
+  const chars = '0123456789abcdefghijklmnopqrstuvwxyz'.split('');
+  const uuid = []
+
+  radix = radix || chars.length;
+
+  if (len) {
+    // Compact form
+    for (let i = 0; i < len; i++) uuid[i] = chars[0 | Math.random() * radix];
+  } else {
+    // rfc4122, version 4 form
+    let r;
+
+    // rfc4122 requires these characters
+    uuid[8] = uuid[13] = uuid[18] = uuid[23] = '-';
+    uuid[14] = '4';
+
+    // Fill in random data.  At i==19 set the high bits of clock sequence as
+    // per rfc4122, sec. 4.1.5
+    for (let i = 0; i < 36; i++) {
+      if (!uuid[i]) {
+        r = 0 | Math.random() * 16;
+        uuid[i] = chars[(i === 19) ? (r & 0x3) | 0x8 : r];
+      }
+    }
+  }
+
+  return uuid.join('');
 }

@@ -1,6 +1,7 @@
-import {deepClone} from "@/utils/util"
+import {deepClone, getDSByName, overwriteObj, runDataSourceRequest, translateOptionItems} from "@/utils/util"
 import FormValidators from '@/utils/validators'
 import eventBus from "@/utils/event-bus"
+import {setLinkWidgetValueToScriptParams} from "@/utils/linkWidgetUtils";
 
 export default {
   inject: ['refList', 'getFormConfig', 'getGlobalDsv', 'globalOptionData', 'globalModel', 'getOptionData'],
@@ -171,6 +172,42 @@ export default {
 
       if ((this.field.type === 'radio') || (this.field.type === 'checkbox')
           || (this.field.type === 'select') || (this.field.type === 'cascader')) {
+        /* 首先处理数据源选项加载 */
+        const bussinessSource = this.field.options.bussinessSource
+        // 表单回显赋值时，如果是绑定数据源的组件，则读取数据源，并找出匹配对象进行赋值
+        if (!!bussinessSource?.currentNodeKey) {
+          /**
+           * 用关联组件的值替换scriptParam的TestVALUE
+           */
+
+          setLinkWidgetValueToScriptParams(bussinessSource, this.getWidgetRef)
+          loadBussinessSource(assembleBussinessParams({
+            scriptId: bussinessSource.currentNodeKey,
+            params: bussinessSource.scriptParams,
+            pageSize: bussinessSource.pageSize
+          })).then(res => {
+            this.loadOptions(res.Data.TableData)
+          })
+        } else if (!!this.field.options.dsEnabled) {
+          this.field.options.optionItems.splice(0, this.field.options.optionItems.length) // 清空原有选项
+          let curDSName = this.field.options.dsName
+          let curDS = getDSByName(this.formConfig, curDSName)
+          if (!!curDS) {
+            let gDsv = this.getGlobalDsv() || {}
+            //console.log('Global DSV is: ', gDsv)
+            let localDsv = new Object({})
+            overwriteObj(localDsv, gDsv)
+            localDsv['widgetName'] = this.field.options.name
+            runDataSourceRequest(curDS, localDsv, false, this.$message).then(res => {
+              this.loadOptions(res)
+            }).catch(err => {
+              this.$message.error(err.message)
+            })
+          }
+
+          return;
+        }
+
         /* 异步更新option-data之后globalOptionData不能获取到最新值，改用provide的getOptionData()方法 */
         const newOptionItems = this.getOptionData()
         if (!!newOptionItems && newOptionItems.hasOwnProperty(this.field.options.name)) {
