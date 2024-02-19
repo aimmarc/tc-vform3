@@ -6,7 +6,9 @@
                 :key="item.dataSourceId"
                 class="mg-b_8 fs-sm flex flex-cross-center"
             >
-                <el-icon class="mg-r_8"><Platform /></el-icon>
+                <el-icon class="mg-r_8">
+                    <Platform />
+                </el-icon>
                 <span class="flex_1">{{ item.uniqueName }}</span>
                 <el-button
                     icon="el-icon-edit"

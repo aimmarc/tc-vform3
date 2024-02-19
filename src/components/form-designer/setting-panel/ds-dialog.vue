@@ -17,7 +17,21 @@
                 <el-input v-model="formData.uniqueName" placeholder="请输入唯一名称" />
             </el-form-item>
             <el-form-item label="请求地址" prop="requestURL">
-                <el-input v-model="formData.requestURL" placeholder="请输入请求地址" />
+                <el-input v-model="formData.requestURL" placeholder="请输入请求地址">
+                    <template #append>
+                        <el-select
+                            v-model="formData.requestURLType"
+                            placeholder="请选择"
+                            style="width: 130px"
+                        >
+                            <el-option
+                                v-for="item in requestURLTypeOptions"
+                                :label="item.label"
+                                :value="item.value"
+                            />
+                        </el-select>
+                    </template>
+                </el-input>
             </el-form-item>
             <el-form-item label="描述信息" prop="description">
                 <el-input
@@ -108,6 +122,16 @@ const rules = {
     requestMethod: [{ required: true, message: '请选择请求方法', trigger: 'blur' }],
 };
 const methodLabels = ['get', 'post', 'put', 'delete'];
+const requestURLTypeOptions = [
+    {
+        label: '固定字符串',
+        value: 'String',
+    },
+    {
+        label: '变量或表达式',
+        value: 'Variable',
+    },
+];
 const formData = ref(getDefaultDs());
 const visible = ref(false);
 const dsForm = ref();
