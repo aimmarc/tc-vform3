@@ -6,10 +6,10 @@
                 :key="item.dataSourceId"
                 class="mg-b_8 fs-sm flex flex-cross-center"
             >
-                <el-icon class="mg-r_8">
-                    <Platform />
+                <el-icon class="mg-r_6">
+                    <Platform class="black_4" />
                 </el-icon>
-                <span class="mg-r_6">{{ item.uniqueName }}</span>
+                <span class="mg-r_8 black_4">{{ item.uniqueName }}</span>
                 <el-tooltip
                     class="box-item"
                     effect="dark"
