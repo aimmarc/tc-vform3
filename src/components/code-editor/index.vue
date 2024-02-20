@@ -127,6 +127,9 @@
         this.aceEditor.getSession().setValue(newValue)
       },
 
+      getValue() {
+        return this.aceEditor.getSession().getValue()
+      }
     }
   }
 </script>

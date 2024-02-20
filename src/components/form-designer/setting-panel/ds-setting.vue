@@ -9,7 +9,15 @@
                 <el-icon class="mg-r_8">
                     <Platform />
                 </el-icon>
-                <span class="flex_1">{{ item.uniqueName }}</span>
+                <span class="mg-r_6">{{ item.uniqueName }}</span>
+                <el-tooltip
+                    class="box-item"
+                    effect="dark"
+                    :content="item.requestURL"
+                    placement="top-start"
+                >
+                    <span class="info flex_1 ellipsis">{{ item.requestURL }}</span>
+                </el-tooltip>
                 <el-button
                     icon="el-icon-edit"
                     circle
@@ -28,14 +36,14 @@
         <div class="ta-c">
             <el-button icon="el-icon-plus" text bg @click="handleAdd">新增数据源</el-button>
             <el-button
-                :icon="Download"
+                :icon="Upload"
                 text
                 bg
                 title="导入数据源"
                 @click="dsImport.open()"
             ></el-button>
             <el-button
-                :icon="Upload"
+                :icon="Download"
                 text
                 bg
                 title="导出数据源"
@@ -44,12 +52,12 @@
         </div>
         <DsDialog ref="dsDialog" @submit="handleSubmit" />
         <DsImport ref="dsImport" @import="handleImport" />
-        <DsExport ref="dsExport" @export="handleExport" />
+        <DsExport ref="dsExport" @export="handleExport" :dsList="dsList" />
     </div>
 </template>
 
 <script setup>
-import { computed, ref, watch } from 'vue';
+import { computed, ref } from 'vue';
 import DsDialog from './ds-dialog.vue';
 import { Platform, Download, Upload } from '@element-plus/icons-vue';
 import { ElMessage, ElMessageBox } from 'element-plus';

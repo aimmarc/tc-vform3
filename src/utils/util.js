@@ -1,5 +1,7 @@
 import Clipboard from 'clipboard'
 import axios from 'axios'
+import { ElMessageBox } from 'element-plus';
+import { saveAs } from 'file-saver'
 
 export function isNull(value) {
   return (value === null) || (value === undefined);
@@ -553,4 +555,37 @@ export function uuid2(len, radix) {
   }
 
   return uuid.join('');
+}
+
+function vsSaveFile(fileName, fileContent) {
+  const msgObj = {
+    cmd: 'writeFile',
+    data: {
+      fileName,
+      code: fileContent
+    }
+  }
+  window.parent.postMessage(msgObj, '*')
+}
+
+export function saveAsFile(fileContent, defaultFileName) {
+  ElMessageBox.prompt('文件名', '保存为文件', {
+    inputValue: defaultFileName,
+    closeOnClickModal: false,
+    inputPlaceholder: '请输入'
+  }).then(({ value }) => {
+    if (!value) {
+      value = defaultFileName
+    }
+
+    if (getQueryParam('vscode') == 1) {
+      vsSaveFile(value, fileContent)
+      return
+    }
+
+    const fileBlob = new Blob([fileContent], { type: 'text/plain;charset=utf-8' })
+    saveAs(fileBlob ,value)
+  }).catch(() => {
+    //
+  })
 }
