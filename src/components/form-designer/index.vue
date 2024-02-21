@@ -12,8 +12,8 @@
   <el-container class="main-container full-height">
     <el-header class="main-header">
       <div class="float-left main-title">
-        <img src="../../assets/vform-logo.png" @click="openHome">
-        <span class="bold">VForm 3</span> {{i18nt('application.productTitle')}} <span class="version-span">Ver {{vFormVersion}}</span></div>
+        <img src="https://file.40017.cn/lcp/lc_logo.png" @click="openHome">
+        <span class="bold">TC VForm 3</span> {{i18nt('application.productTitle')}} <span class="version-span">Ver {{vFormVersion}}</span></div>
       <div class="float-right external-link">
         <el-dropdown v-if="showLink('languageMenu')" :hide-timeout="2000" @command="handleLanguageChanged">
           <span class="el-dropdown-link">{{curLangName}}<svg-icon icon-class="el-arrow-down" /></span>
@@ -27,8 +27,8 @@
         <a v-if="showLink('externalLink')" href="javascript:void(0)" @click="(ev) => openUrl(ev, gitUrl)" target="_blank"><svg-icon icon-class="github" />{{i18nt('application.github')}}</a>
         <a v-if="showLink('externalLink')" href="javascript:void(0)" @click="(ev) => openUrl(ev, docUrl)" target="_blank"><svg-icon icon-class="document" />{{i18nt('application.document')}}</a>
         <a v-if="showLink('externalLink')" href="javascript:void(0)" @click="(ev) => openUrl(ev, chatUrl)" target="_blank">{{i18nt('application.qqGroup')}}</a>
-        <a v-if="showLink('externalLink')" href="javascript:void(0)" @click="(ev) => openUrl(ev, subScribeUrl)" target="_blank">
-          {{i18nt('application.subscription')}}<i class="el-icon-top-right"></i></a>
+        <!-- <a v-if="showLink('externalLink')" href="javascript:void(0)" @click="(ev) => openUrl(ev, subScribeUrl)" target="_blank">
+          {{i18nt('application.subscription')}}<i class="el-icon-top-right"></i></a> -->
       </div>
     </el-header>
 
@@ -143,7 +143,7 @@
         caseName: '',
 
         docUrl: 'https://www.vform666.com/document3.html',
-        gitUrl: 'https://github.com/vform666/variant-form3-vite',
+        gitUrl: 'https://github.com/aimmarc/vform3',
         chatUrl: 'https://www.vform666.com/pages/chat-group/',
         subScribeUrl: 'https://www.vform666.com/pages/pro/',
 
