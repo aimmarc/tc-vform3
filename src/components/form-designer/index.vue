@@ -24,9 +24,9 @@
             </el-dropdown-menu>
           </template>
         </el-dropdown>
-        <a v-if="showLink('externalLink')" href="javascript:void(0)" @click="(ev) => openUrl(ev, gitUrl)" target="_blank"><svg-icon icon-class="github" />{{i18nt('application.github')}}</a>
+        <!-- <a v-if="showLink('externalLink')" href="javascript:void(0)" @click="(ev) => openUrl(ev, gitUrl)" target="_blank"><svg-icon icon-class="github" />{{i18nt('application.github')}}</a> -->
         <a v-if="showLink('externalLink')" href="javascript:void(0)" @click="(ev) => openUrl(ev, docUrl)" target="_blank"><svg-icon icon-class="document" />{{i18nt('application.document')}}</a>
-        <a v-if="showLink('externalLink')" href="javascript:void(0)" @click="(ev) => openUrl(ev, chatUrl)" target="_blank">{{i18nt('application.qqGroup')}}</a>
+        <!-- <a v-if="showLink('externalLink')" href="javascript:void(0)" @click="(ev) => openUrl(ev, chatUrl)" target="_blank">{{i18nt('application.qqGroup')}}</a> -->
         <!-- <a v-if="showLink('externalLink')" href="javascript:void(0)" @click="(ev) => openUrl(ev, subScribeUrl)" target="_blank">
           {{i18nt('application.subscription')}}<i class="el-icon-top-right"></i></a> -->
       </div>
@@ -142,7 +142,7 @@
         vsCodeFlag: false,
         caseName: '',
 
-        docUrl: 'https://www.vform666.com/document3.html',
+        docUrl: 'https://toca.17u.cn/wiki?fid=f237beeaa451480baf512364fc5e36f9',
         gitUrl: 'https://github.com/aimmarc/vform3',
         chatUrl: 'https://www.vform666.com/pages/chat-group/',
         subScribeUrl: 'https://www.vform666.com/pages/pro/',
